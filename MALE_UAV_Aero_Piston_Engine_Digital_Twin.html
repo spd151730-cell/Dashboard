@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MALE UAV Aero Piston Engine Digital Twin Workstation</title>
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- BEGIN: Typography & Universal Styling -->
+<style data-purpose="typography">
+    * {
+      font-family: 'Times New Roman', Times, Georgia, serif !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+<style data-purpose="custom-layout">
+    /* Subtle blueprint grid pattern for the CAD Digital Twin viewport */
+    .blueprint-grid {
+      background-color: #f0f7ff;
+      background-image: 
+        linear-gradient(to right, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .technical-chart-grid {
+      background-color: #ffffff;
+      background-image: 
+        linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+<!-- END: Typography & Universal Styling -->
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style data-purpose="stitch-token-compatibility">
+  .bg-background{background-color:#f8fafc}.text-on-background{color:#0f172a}
+  .bg-surface-container-lowest{background-color:#fff}.bg-surface-container{background-color:#f1f5f9}
+  .bg-surface-variant{background-color:#e2e8f0}.text-on-surface-variant{color:#475569}
+  .bg-tertiary-container{background-color:#e0f2fe}.text-on-tertiary-container{color:#075985}
+  .bg-primary{background-color:#0f172a}.text-on-primary{color:#fff}
+  .text-outline{color:#64748b}.text-headline-xl{font-size:1.5rem;line-height:2rem}
+  .text-headline-lg{font-size:1.125rem;line-height:1.75rem}
+  .text-body-md{font-size:.875rem;line-height:1.5rem}
+  .text-label-caps{font-size:.65rem;line-height:1rem;text-transform:uppercase;letter-spacing:.08em}
+  .text-telemetry-label{font-size:.65rem;line-height:1rem;text-transform:uppercase;letter-spacing:.06em}
+  .font-headline-xl,.font-headline-lg,.font-body-md,.font-label-caps,.font-telemetry-label{font-family:'Times New Roman',Times,Georgia,serif}
+</style>
+
+<style data-purpose="one-page-layout">
+  html{scroll-behavior:auto; overflow:hidden}
+  #overview-digital-twin section.bg-white.rounded.border.shadow-sm.overflow-hidden .blueprint-grid{
+    width:100%;
+    min-height:480px;
+  }
+  @media (min-width: 1536px){
+    #overview-digital-twin > div{
+      max-width:100%;
+    }
+  }
+
+<style data-purpose="dashboard-repositioning">
+  html { scroll-behavior: smooth; }
+  body { overflow: hidden; }
+
+  #workstation-main { min-width: 0; }
+  #dashboard-scroll { min-width: 0; overflow: hidden !important; }
+
+  .rail-control {
+    min-height: 34px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .rail-control:hover { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+  .rail-control.active { background: #eaf2ff; border-color: #93c5fd; color: #1e40af; }
+
+  .top-nav-link {
+    display:flex;
+    align-items:center;
+    white-space:nowrap;
+    padding:7px 12px;
+    border-radius:5px;
+    font-size:15px;
+    color:#1e3a8a;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    font-weight:600;
+    transition:background-color .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .top-nav-link:hover { background:#dbeafe; color:#1e3a8a; border-color:#93c5fd; }
+  .top-nav-link.active { background:#1e40af; color:#ffffff; border:1px solid #1e40af; }
+  .top-nav-link:active { background:#1e3a8a; color:#ffffff; border:1px solid #1e3a8a; }
+
+  /* Page-by-page dashboard navigation: only one workspace is visible at a time. */
+  #dashboard-scroll {
+    position: relative;
+    overflow: hidden !important;
+    height: calc(100vh - 108px);
+     overflow: hidden !important;
+    min-height: 0;
+  }
+  #dashboard-scroll > .dashboard-page {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 0;
+    display: none;
+    box-sizing: border-box;
+  }
+  #dashboard-scroll > .dashboard-page.active-page {
+    display: block;
+  }
+  .page-fit {
+    height: 100%;
+    overflow: hidden;
+  }
+  .environment-page {
+    padding: 24px;
+    background: #f8fafc;
+  }
+  .environment-grid {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:14px;
+  }
+  .environment-item {
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:5px;
+    padding:16px;
+  }
+  @media (max-width: 1100px) {
+    .environment-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
+
+  /* Manual control console: opens directly under the Extra Controls button in the sidebar */
+  .manual-console-panel { max-height: 70vh; overflow-y: auto; }
+  .manual-console-inner { min-height: 0; width: auto; }
+
+  .param-console { display: flex; flex-direction: column; gap: 10px; }
+  .param-tabs { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px; }
+  .param-tab {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #dbeafe;
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 13px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .param-tab.active { border-color: #2563eb; box-shadow: 0 0 0 1px #2563eb inset; color: #1d4ed8; background: #fff; }
+  .param-tab:hover { border-color: #93c5fd; }
+
+  .param-group { border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; overflow: hidden; }
+  .param-group-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #475569;
+    background: #fff;
+  }
+  .param-chevron { display:inline-block; transition: transform .18s ease; color:#94a3b8; }
+  .param-group.collapsed .param-chevron { transform: rotate(-90deg); }
+  .param-group-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 16px 16px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .param-group.collapsed .param-group-body { display: none; }
+  .param-row { display: flex; flex-direction: column; gap: 8px; }
+  .param-row-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .param-label { font-size: 12px; font-weight: 700; color: #1e293b; display:flex; flex-direction:column; gap:2px; }
+  .param-label span { font-size: 10px; font-weight: 600; color: #94a3b8; text-transform: none; letter-spacing: 0; }
+  .param-slider {
+    width: 100%;
+    height: 22px;
+    accent-color: #2563eb;
+    cursor: pointer;
+  }
+  .param-value {
+    border: 1.5px solid #2563eb;
+    border-radius: 6px;
+    padding: 5px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    width: 72px;
+    text-align: right;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .console-control {
+    min-width: 0;
+    border-left: 2px solid #e2e8f0;
+    padding: 0 10px 0 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5px;
+  }
+  .console-control label {
+    font-size: 9px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: 800;
+    color: #475569;
+  }
+  .console-control output {
+    font-size: 10px;
+    color: #64748b;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+  }
+  .console-control input[type="range"] {
+    width: 100%;
+    accent-color: #2563eb;
+    cursor: pointer;
+  }
+  .console-control select {
+    width: 100%;
+    min-height: 30px;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    background: #fff;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 6px;
+  }
+  .console-reset {
+    align-self: flex-start;
+    margin-top: 1px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .console-reset:hover { background: #f1f5f9; }
+
+  @media (max-width: 1100px) {
+    .manual-console.open { max-height: 42vh; height: 42vh; }
+  }
+  @media (max-width: 700px) {
+    body { overflow: auto; }
+    #workstation-main { height: auto; min-height: 100vh; }
+    #dashboard-scroll { overflow: hidden !important; }
+    .manual-console.open { max-height: none; height: auto; }
+  }
+</style>
+</style>
+</head>
+<body class="bg-[#f8fafc] text-slate-900 antialiased selection:bg-blue-100 flex min-h-screen">
+<!-- BEGIN: Persistent Left Sidebar -->
+<aside class="w-72 min-w-[288px] max-w-[288px] bg-white border-r-2 border-slate-300 shadow-md flex flex-col justify-between h-screen sticky top-0 select-none z-30 overflow-y-auto" data-purpose="sidebar">
+<div class="flex flex-col">
+<!-- Sidebar Header / Branding -->
+<div class="p-5 border-b border-slate-100 flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-sky-100 border border-sky-200 flex items-center justify-center text-sky-800 shadow-sm">
+<!-- Aerospace Airplane Icon -->
+<svg class="w-5 h-5 transform -rotate-45" fill="currentColor" viewbox="0 0 24 24">
+<path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"></path>
+</svg>
+</div>
+<div>
+<h1 class="font-bold text-base tracking-wide uppercase leading-tight text-slate-800">MALE UAV</h1>
+<p class="text-xs text-slate-500 font-serif italic">Aero-Engine Digital Twin</p>
+</div>
+</div>
+<!-- Navigation moved to the top of the dashboard UI -->
+<div class="px-3 py-3 border-b border-slate-100">
+  <div class="px-1 text-[9px] uppercase tracking-[0.16em] font-bold text-slate-400">Dashboard Navigation</div>
+  <div class="text-[10px] text-slate-400 mt-1">Use the top navigation bar</div>
+</div>
+<!-- Compact Engineering Control Rail -->
+<div class="px-3 pt-2 pb-3 border-t border-slate-100" data-purpose="control-rail">
+  <div class="px-1 pb-2 text-[9px] uppercase tracking-[0.16em] font-bold text-slate-400">Control Rail</div>
+  <div class="grid grid-cols-2 gap-1.5">
+    <button id="rail-refresh" type="button" class="rail-control">
+      <span class="text-sm leading-none">↻</span><span>Refresh</span>
+    </button>
+    <div id="rail-throttle" class="rail-control flex-col !items-stretch !gap-1 !py-2" title="Throttle control">
+      <div class="flex items-center justify-center gap-1.5">
+        <span class="text-sm leading-none">↕</span><span>Throttle</span>
+        <output id="rail-throttle-value" class="font-mono text-[9px] ml-auto">65%</output>
+      </div>
+      <input id="rail-throttle-range" type="range" min="0" max="100" value="65"
+             aria-label="Throttle" class="w-full h-1.5" style="accent-color:#2563eb;cursor:pointer">
+    </div>
+    <button id="rail-environment" type="button" class="rail-control col-span-2" aria-expanded="false">
+      <span class="text-sm leading-none">◫</span><span>Environment</span>
+    </button>
+    <div id="environment-panel" class="col-span-2 hidden mt-1 border border-slate-300 bg-white p-2 rounded-sm shadow-sm">
+      <div class="text-[9px] uppercase tracking-wider font-bold text-slate-500 mb-1.5">Environmental Conditions</div>
+      <select id="environment-condition" class="w-full h-10 px-2 border-2 border-blue-500 bg-white text-[11px] font-semibold uppercase text-slate-700 rounded-sm outline-none focus:ring-1 focus:ring-blue-300">
+        <option value="STANDARD">STANDARD</option>
+        <option value="HIGH_ALTITUDE">HIGH ALTITUDE</option>
+        <option value="HOT_WEATHER">HOT WEATHER</option>
+        <option value="ENDURANCE">ENDURANCE</option>
+        <option value="RAPID_TRANSITION">RAPID TRANSITION</option>
+      </select>
+    </div>
+    <button id="rail-extra-controls" type="button" class="rail-control col-span-2" aria-expanded="false">
+      <span class="text-sm leading-none">≡</span><span>Extra Controls</span>
+    </button>
+    <div id="manual-control-console" aria-hidden="true" class="col-span-2 hidden mt-1 border border-slate-300 bg-white rounded-sm shadow-sm manual-console-panel"><div class="manual-console-inner px-3 py-3"><div class="param-console">
+
+  <div class="param-group" data-group="thermal">
+    <button type="button" class="param-group-header" aria-expanded="true">
+      <span class="param-chevron">⌄</span><span>THERMAL</span>
+    </button>
+    <div class="param-group-body">
+      <div class="param-row"><div class="param-row-top"><div class="param-label">CHT<span>°C</span></div><input type="text" class="param-value" id="pc-cht-value" value="182.0"></div><input type="range" min="120" max="230" value="182" class="param-slider" data-value-target="pc-cht-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">EGT<span>°C</span></div><input type="text" class="param-value" id="pc-egt-value" value="640.0"></div><input type="range" min="400" max="780" value="640" class="param-slider" data-value-target="pc-egt-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Coolant<span>°C</span></div><input type="text" class="param-value" id="pc-coolant-value" value="88.5"></div><input type="range" min="0" max="130" value="88.5" step="0.1" class="param-slider" data-value-target="pc-coolant-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Ambient<span>°C</span></div><input type="text" class="param-value" id="pc-ambient-value" value="25.0"></div><input type="range" min="-40" max="55" value="25" step="0.1" class="param-slider" data-value-target="pc-ambient-value"></div>
+    </div>
+  </div>
+
+  <div class="param-group" data-group="lubrication">
+    <button type="button" class="param-group-header" aria-expanded="true">
+      <span class="param-chevron">⌄</span><span>LUBRICATION</span>
+    </button>
+    <div class="param-group-body">
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Oil Press<span>psi</span></div><input type="text" class="param-value" id="pc-oilpress-value" value="65.34"></div><input type="range" min="0" max="100" value="65" step="0.1" class="param-slider" data-value-target="pc-oilpress-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Oil Temp<span>°C</span></div><input type="text" class="param-value" id="pc-oiltemp-value" value="94.72"></div><input type="range" min="0" max="150" value="94" step="0.1" class="param-slider" data-value-target="pc-oiltemp-value"></div>
+    </div>
+  </div>
+
+  <div class="param-group" data-group="fuel">
+    <button type="button" class="param-group-header" aria-expanded="true">
+      <span class="param-chevron">⌄</span><span>FUEL</span>
+    </button>
+    <div class="param-group-body">
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Fuel Flow<span>L/h</span></div><input type="text" class="param-value" id="pc-fuelflow-value" value="18.2"></div><input type="range" min="0" max="40" value="18" step="0.1" class="param-slider" data-value-target="pc-fuelflow-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Fuel Press<span>bar</span></div><input type="text" class="param-value" id="pc-fuelpress-value" value="4.6"></div><input type="range" min="0" max="10" value="4.6" step="0.1" class="param-slider" data-value-target="pc-fuelpress-value"></div>
+    </div>
+  </div>
+
+  <div class="param-group" data-group="performance">
+    <button type="button" class="param-group-header" aria-expanded="true">
+      <span class="param-chevron">⌄</span><span>PERFORMANCE</span>
+    </button>
+    <div class="param-group-body">
+      <div class="param-row"><div class="param-row-top"><div class="param-label">RPM<span>rpm</span></div><input type="text" class="param-value" id="pc-rpm-value" value="2450"></div><input type="range" min="1500" max="5000" value="2450" step="10" class="param-slider" data-value-target="pc-rpm-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Manifold<span>bar</span></div><input type="text" class="param-value" id="pc-manifold-value" value="1.42"></div><input type="range" min="0" max="2.5" value="1.42" step="0.01" class="param-slider" data-value-target="pc-manifold-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Throttle<span>%</span></div><input type="text" class="param-value" id="pc-throttle-value" value="65"></div><input type="range" min="0" max="100" value="65" class="param-slider" data-value-target="pc-throttle-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Engine Load<span>%</span></div><input type="text" class="param-value" id="pc-load-value" value="74"></div><input type="range" min="0" max="100" value="74" class="param-slider" data-value-target="pc-load-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Vibration<span>mm/s</span></div><input type="text" class="param-value" id="pc-vibration-value" value="1.2"></div><input type="range" min="0" max="5" value="1.2" step="0.1" class="param-slider" data-value-target="pc-vibration-value"></div>
+      <div class="param-row"><div class="param-row-top"><div class="param-label">Alternator<span>V</span></div><input type="text" class="param-value" id="pc-alt-value" value="28.4"></div><input type="range" min="0" max="32" value="28.4" step="0.1" class="param-slider" data-value-target="pc-alt-value"></div>
+    </div>
+  </div>
+</div></div></div>
+  </div>
+</div>
+</div>
+<!-- Bottom Sidebar Graphic & Mission Motto -->
+<div class="p-4 border-t border-slate-100 flex flex-col items-center text-center">
+<div class="w-full h-14 flex items-center justify-center relative mb-1 opacity-75">
+<svg class="w-40 h-12 text-slate-300 stroke-current fill-none" viewbox="0 0 180 50">
+<path d="M10 45 L50 25 L85 38 L120 18 L170 45" stroke-linecap="round" stroke-width="1.5"></path>
+<path d="M90 20 L90 12 M78 16 L102 16" stroke-linecap="round" stroke-width="1.5"></path>
+<circle class="fill-slate-400" cx="90" cy="14" r="2.5"></circle>
+</svg>
+</div>
+<p class="text-[10px] tracking-widest text-slate-500 uppercase font-semibold">
+        PRECISION • RELIABILITY • MISSION SUCCESS
+      </p>
+</div>
+</aside>
+<!-- END: Persistent Left Sidebar -->
+<!-- BEGIN: Main Workstation Body -->
+<main id="workstation-main" class="flex-1 min-w-0 h-screen min-h-0 flex flex-col overflow-hidden"><!-- Top Mission Bar / Master Abort / Arm Bar -->
+<header class="bg-white border-b-2 border-slate-300 shadow-sm px-6 py-3 flex items-center justify-between sticky top-0 z-20">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-headline-sm text-sm tracking-wide uppercase text-slate-800">MALE UAV Aero Piston Engine Workstation</span>
+</div>
+<div class="h-4 w-[1px] bg-slate-200"></div>
+<div class="flex items-center gap-2 text-xs text-slate-600 font-serif">
+<span class="font-bold uppercase tracking-wider text-slate-400">Phase:</span>
+<span class="px-2 py-0.5 rounded bg-blue-50 text-blue-900 border border-blue-200 font-semibold">CRUISE</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<div class="text-[10px] text-slate-400 font-mono uppercase">Telemetry Clock (UTC)</div>
+<div class="text-xs font-mono font-bold text-slate-700" id="utc-clock">14:22:08.41</div>
+</div>
+
+<div class="flex items-center bg-slate-100 p-1 rounded-md border border-slate-200">
+  <button id="mode-live" class="px-3 py-1 text-xs font-bold rounded text-slate-500 hover:text-slate-700 transition-colors">Live</button>
+  <button id="mode-replay" class="px-3 py-1 text-xs font-bold rounded bg-white text-slate-800 shadow-sm transition-colors">Replay</button>
+</div>
+<button class="px-3 py-1.5 bg-red-700 text-white text-xs font-bold rounded hover:bg-red-800 transition-colors shadow-sm flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M18.364 5.636l-12.728 12.728m0-12.728l12.728 12.728" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        MASTER ABORT
+      </button>
+</div>
+</header>
+<!-- Top Dashboard Navigation -->
+<nav aria-label="Dashboard Navigation" class="bg-white border-b-2 border-slate-300 shadow-sm px-6 py-2 sticky top-[57px] z-10">
+  <div class="flex items-center gap-2 overflow-x-auto">
+    <a data-path="overview-digital-twin" href="#overview-digital-twin" class="top-nav-link active">
+      Overview / Digital Twin
+    </a>
+    <a data-path="diagnostics-prediction" href="#diagnostics-prediction" class="top-nav-link">
+      Diagnostics &amp; Prediction
+    </a>
+    <a data-path="trends-maintenance" href="#trends-maintenance" class="top-nav-link">
+      Trends &amp; Maintenance
+    </a>
+    <a data-path="mission-reports" href="#mission-reports" class="top-nav-link">
+      Mission &amp; Replay
+    </a>
+  </div>
+</nav>
+<div id="dashboard-scroll" class="flex-1 min-h-0 overflow-hidden"><div class="flex flex-col w-full bg-[#f8fafc] text-slate-900 min-h-screen dashboard-page" id="overview-digital-twin">
+<!-- Main Content Flow -->
+<div class="p-6 space-y-6 max-w-[1600px] mx-auto w-full">
+<!-- Real-Time Engine Health KPI Row -->
+<section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+<!-- KPI 1 -->
+<div class="bg-white p-4 rounded border border-slate-200 shadow-sm flex flex-col justify-between">
+<div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Engine Health</div>
+<div class="flex items-baseline justify-between mt-2">
+<span class="text-2xl font-bold font-serif text-slate-800">92<span class="text-sm font-normal text-slate-400">/100</span></span>
+<span class="text-xs px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded font-bold">NOMINAL</span>
+</div>
+<div class="w-full bg-slate-100 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-[92%]"></div>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-white p-4 rounded border border-slate-200 shadow-sm flex flex-col justify-between">
+<div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Health Index</div>
+<div class="flex items-baseline justify-between mt-2">
+<span class="text-2xl font-bold font-serif text-slate-800">92<span class="text-sm font-normal text-slate-400">/100</span></span>
+<span class="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded font-bold">STABLE</span>
+</div>
+<div class="w-full bg-slate-100 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full w-[92%]"></div>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-white p-4 rounded border border-slate-200 shadow-sm flex flex-col justify-between">
+<div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Engine Status</div>
+<div class="flex items-baseline justify-between mt-2">
+<span class="text-xl font-bold font-serif text-emerald-700">ONLINE</span>
+<span class="text-[10px] text-slate-400 font-mono">ID: 04-B</span>
+</div>
+<div class="text-[11px] text-slate-500 mt-3 font-serif italic">All systems nominal</div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-white p-4 rounded border border-slate-200 shadow-sm flex flex-col justify-between">
+<div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Engine Load</div>
+<div class="flex items-baseline justify-between mt-2">
+<span class="text-2xl font-bold font-serif text-slate-800">74<span class="text-sm font-normal text-slate-400">%</span></span>
+<span class="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-1.5 rounded font-bold">OPTIMAL</span>
+</div>
+<div class="w-full bg-slate-100 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-amber-600 h-full w-[74%]"></div>
+</div>
+</div>
+<!-- KPI 5 -->
+<div class="bg-white p-4 rounded border border-slate-200 shadow-sm flex flex-col justify-between">
+<div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Sensor Status</div>
+<div class="flex items-baseline justify-between mt-2">
+<span class="text-xl font-bold font-serif text-blue-800">SYNCED</span>
+<span class="text-[10px] text-slate-400 font-mono">100Hz</span>
+</div>
+<div class="text-[11px] text-slate-500 mt-3 font-serif italic">Zero packet loss</div>
+</div>
+<!-- KPI 6 -->
+<div class="bg-white p-4 rounded border border-slate-200 shadow-sm flex flex-col justify-between">
+<div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">System Status</div>
+<div class="flex items-baseline justify-between mt-2">
+<span class="text-2xl font-bold font-serif text-slate-800">6/6</span>
+<span class="text-xs px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded font-bold">ONLINE</span>
+</div>
+<div class="w-full bg-slate-100 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-full"></div>
+</div>
+</div>
+</section>
+<!-- Large Digital Twin — Engine State Area -->
+<section class="bg-white rounded border border-slate-200 shadow-sm overflow-hidden">
+<div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm tracking-wide text-slate-800 uppercase">Large Digital Twin — Engine State &amp; Schematic View</span>
+<span class="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-mono">CAD SIM v4.2</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Core Active</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Oil Pressure Flow</span>
+</div>
+</div>
+<div class="relative w-full h-[480px] blueprint-grid flex items-center justify-center p-6 overflow-hidden">
+<!-- SVG Technical Schematic Simulation Overlay -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+<svg class="w-full h-full text-blue-600" fill="none" viewbox="0 0 1000 400">
+<g transform="translate(-150 -75) scale(1.3)">
+<!-- Center Engine Block Wireframe -->
+<rect height="200" rx="10" stroke="currentColor" stroke-dasharray="4 4" stroke-width="2" width="300" x="350" y="150"></rect>
+<!-- Cylinders Left -->
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="250" y="170"></rect>
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="250" y="270"></rect>
+<!-- Cylinders Right -->
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="670" y="170"></rect>
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="670" y="270"></rect>
+<!-- Crankshaft Centerline -->
+<line stroke="currentColor" stroke-width="3" x1="200" x2="800" y1="250" y2="250"></line>
+<circle cx="500" cy="250" r="40" stroke="currentColor" stroke-width="2"></circle>
+</g>
+</svg>
+</div>
+<!-- Annotation 1: Engine Core -->
+<div class="absolute top-[35%] left-[48%] -translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Engine Core</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Core Temp:</span> <span class="font-mono font-bold text-slate-800">428 °C</span></div>
+<div class="flex justify-between"><span>Vibration:</span> <span class="font-mono font-bold text-slate-800">1.2 mm/s</span></div>
+</div>
+</div>
+<!-- Annotation 2: Cylinder System -->
+<div class="absolute top-[25%] left-[25%] -translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Cylinder System</span>
+<span class="text-emerald-600 font-bold text-[10px]">NOMINAL</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>CHT (Avg):</span> <span class="font-mono font-bold text-slate-800">182 °C</span></div>
+<div class="flex justify-between"><span>Compression:</span> <span class="font-mono font-bold text-slate-800">98%</span></div>
+</div>
+</div>
+<!-- Annotation 3: Lubrication -->
+<div class="absolute bottom-[22%] left-[30%] -translate-x-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Lubrication</span>
+<span class="text-emerald-600 font-bold text-[10px]">STABLE</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Oil Pressure:</span> <span class="font-mono font-bold text-slate-800">4.8 bar</span></div>
+<div class="flex justify-between"><span>Oil Temp:</span> <span class="font-mono font-bold text-slate-800">91 °C</span></div>
+</div>
+</div>
+<!-- Annotation 4: Cooling -->
+<div class="absolute top-[25%] right-[25%] translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Cooling System</span>
+<span class="text-emerald-600 font-bold text-[10px]">OPTIMAL</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Coolant Flow:</span> <span class="font-mono font-bold text-slate-800">12.4 L/m</span></div>
+<div class="flex justify-between"><span>Radiator Eff:</span> <span class="font-mono font-bold text-slate-800">95%</span></div>
+</div>
+</div>
+<!-- Annotation 5: Combustion -->
+<div class="absolute bottom-[50%] right-[18%] bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Combustion</span>
+<span class="text-emerald-600 font-bold text-[10px]">SYNCED</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>EGT:</span> <span class="font-mono font-bold text-slate-800">640 °C</span></div>
+<div class="flex justify-between"><span>Fuel Flow:</span> <span class="font-mono font-bold text-slate-800">18.2 L/h</span></div>
+</div>
+</div>
+<!-- Annotation 6: Rotational System -->
+<div class="absolute bottom-[22%] right-[32%] bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Rotational System</span>
+<span class="text-emerald-600 font-bold text-[10px]">NOMINAL</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Speed (RPM):</span> <span class="font-mono font-bold text-slate-800">2,450</span></div>
+<div class="flex justify-between"><span>Torque:</span> <span class="font-mono font-bold text-slate-800">310 Nm</span></div>
+</div>
+</div>
+<!-- CAD Viewport Toolbar overlay -->
+<div class="absolute bottom-4 left-4 bg-white/90 border border-slate-200 p-1.5 rounded flex items-center gap-2 text-xs">
+<button class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded font-bold">ISO VIEW</button>
+<button class="px-2 py-1 hover:bg-slate-100 rounded text-slate-600">SECTION X</button>
+<button class="px-2 py-1 hover:bg-slate-100 rounded text-slate-600">THERMAL MAP</button>
+</div>
+</div>
+</section>
+<!-- Full-Width Real-Time Engine Parameters Row -->
+<section class="bg-white rounded border border-slate-200 shadow-sm p-5">
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+<h3 class="font-bold text-sm tracking-wide text-slate-800 uppercase">Real-Time Engine Parameters</h3>
+<span class="text-xs text-slate-500 font-serif">Sampling Rate: 100 Hz / Channel</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+<!-- Param 1: RPM -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">RPM</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">2,450</div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Nominal (±5)</div>
+</div>
+<!-- Param 2: CHT -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">CHT</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">182 <span class="text-xs font-normal">°C</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Max: 220 °C</div>
+</div>
+<!-- Param 3: EGT -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">EGT</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">640 <span class="text-xs font-normal">°C</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Max: 750 °C</div>
+</div>
+<!-- Param 4: Oil Pressure -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Oil Press.</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">4.8 <span class="text-xs font-normal">bar</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Min: 3.5 bar</div>
+</div>
+<!-- Param 5: Oil Temperature -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Oil Temp.</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">91 <span class="text-xs font-normal">°C</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Range: 80-110</div>
+</div>
+<!-- Param 6: Fuel Flow -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Fuel Flow</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">18.2 <span class="text-xs font-normal">L/h</span></div>
+<div class="text-[10px] text-blue-600 font-serif mt-1">Eco Cruise</div>
+</div>
+<!-- Param 7: Vibration -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Vibration</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">1.2 <span class="text-xs font-normal">mm/s</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Threshold &lt;2.5</div>
+</div>
+<!-- Param 8: Alternator -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Alternator</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">28.4 <span class="text-xs font-normal">V</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Charging OK</div>
+</div>
+<!-- Param 9: Coolant -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Coolant</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">88.5 <span class="text-xs font-normal">°C</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Range: 70-105</div>
+</div>
+<!-- Param 10: Ambient -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Ambient</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">25.0 <span class="text-xs font-normal">°C</span></div>
+<div class="text-[10px] text-slate-500 font-serif mt-1">Outside Air Temp</div>
+</div>
+<!-- Param 11: Fuel Press -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Fuel Press.</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">4.6 <span class="text-xs font-normal">bar</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Min: 3.0 bar</div>
+</div>
+<!-- Param 12: Manifold -->
+<div class="p-3 bg-slate-50/50 rounded border border-slate-100">
+<div class="text-[10px] uppercase font-bold text-slate-400">Manifold</div>
+<div class="text-lg font-mono font-bold text-slate-800 mt-1">1.42 <span class="text-xs font-normal">bar</span></div>
+<div class="text-[10px] text-emerald-600 font-serif mt-1">Boost Pressure</div>
+</div>
+</div>
+</section>
+<!-- Two Column Grid for Component Health & Active Faults -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Engine Component Health Overview Cards (2 Cols) -->
+<section class="lg:col-span-2 bg-white rounded border border-slate-200 shadow-sm p-5 flex flex-col">
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+<h3 class="font-bold text-sm tracking-wide text-slate-800 uppercase">Engine Component Health Overview</h3>
+<span class="text-xs text-slate-500 font-serif">Subsystem Diagnostic Matrix</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+<!-- Component 1 -->
+<div class="p-4 rounded border border-slate-100 bg-slate-50/30 flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<span class="font-bold text-xs uppercase text-slate-800">Turbocharger Assembly</span>
+<span class="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded font-bold">96%</span>
+</div>
+<div class="space-y-1 text-xs text-slate-600 font-serif">
+<div class="flex justify-between"><span>Boost Pressure:</span> <span class="font-mono">1.42 bar</span></div>
+<div class="flex justify-between"><span>Bearing Temp:</span> <span class="font-mono">112 °C</span></div>
+</div>
+<div class="w-full bg-slate-200 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-[96%]"></div>
+</div>
+</div>
+<!-- Component 2 -->
+<div class="p-4 rounded border border-slate-100 bg-slate-50/30 flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<span class="font-bold text-xs uppercase text-slate-800">Fuel Injection System</span>
+<span class="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded font-bold">94%</span>
+</div>
+<div class="space-y-1 text-xs text-slate-600 font-serif">
+<div class="flex justify-between"><span>Rail Pressure:</span> <span class="font-mono">1,600 bar</span></div>
+<div class="flex justify-between"><span>Duty Cycle:</span> <span class="font-mono">42.5%</span></div>
+</div>
+<div class="w-full bg-slate-200 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-[94%]"></div>
+</div>
+</div>
+<!-- Component 3 -->
+<div class="p-4 rounded border border-slate-100 bg-slate-50/30 flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<span class="font-bold text-xs uppercase text-slate-800">Ignition &amp; ECU Dual-Channel</span>
+<span class="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded font-bold">98%</span>
+</div>
+<div class="space-y-1 text-xs text-slate-600 font-serif">
+<div class="flex justify-between"><span>Primary/Backup:</span> <span class="font-mono">ONLINE/OK</span></div>
+<div class="flex justify-between"><span>Advance Angle:</span> <span class="font-mono">24° BTDC</span></div>
+</div>
+<div class="w-full bg-slate-200 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-[98%]"></div>
+</div>
+</div>
+<!-- Component 4 -->
+<div class="p-4 rounded border border-slate-100 bg-slate-50/30 flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<span class="font-bold text-xs uppercase text-slate-800">Valvetrain &amp; Timing</span>
+<span class="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded font-bold">88%</span>
+</div>
+<div class="space-y-1 text-xs text-slate-600 font-serif">
+<div class="flex justify-between"><span>Wear Index:</span> <span class="font-mono">Minor Deviation</span></div>
+<div class="flex justify-between"><span>Valve Clearance:</span> <span class="font-mono">Within Spec</span></div>
+</div>
+<div class="w-full bg-slate-200 h-1 mt-3 rounded-full overflow-hidden">
+<div class="bg-amber-500 h-full w-[88%]"></div>
+</div>
+</div>
+</div>
+</section>
+
+</div>
+</div>
+<!-- Script for live clock update -->
+
+</div><div class="flex flex-col w-full p-6 space-y-6 dashboard-page" id="diagnostics-prediction">
+<!-- Top Section: AI/ML Anomaly Detection & Physics-AI Pipeline -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- AI/ML Anomaly Detection Panel (12 cols) -->
+<div class="lg:col-span-12 bg-white rounded-xl p-5 shadow-sm border border-slate-200/80 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<div class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></div>
+<h2 class="font-headline-lg text-slate-900">AI/ML Anomaly Detection &amp; SHAP Attribution</h2>
+</div>
+<span class="px-2.5 py-1 text-telemetry-label bg-emerald-50 text-emerald-700 border border-emerald-200 rounded">MODEL STATUS: ONLINE</span>
+</div>
+<div class="grid grid-cols-3 gap-4 my-4">
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Anomaly Score</span>
+<span class="text-telemetry-metric text-amber-600">0.824</span>
+<span class="text-xs text-slate-400 block mt-0.5">Threshold: 0.750</span>
+</div>
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Fault Probability</span>
+<span class="text-telemetry-metric text-red-600">91.4%</span>
+<span class="text-xs text-slate-400 block mt-0.5">Confidence Interval ±1.2%</span>
+</div>
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Detected Pattern</span>
+<span class="text-body-sm font-bold text-slate-800 truncate block mt-1">Valve Blowby &amp; Thermal Drift</span>
+<span class="text-xs text-slate-400 block mt-0.5">ID: #VBD-4402</span>
+</div>
+</div>
+<!-- Explainability / SHAP feature attribution bars -->
+<div class="space-y-2.5 mt-4">
+<div class="flex justify-between text-body-sm font-semibold text-slate-700">
+<span>Explainability / SHAP Feature Attribution</span>
+<span class="text-xs text-slate-400">Impact Magnitude</span>
+</div>
+<div class="space-y-2">
+<div>
+<div class="flex justify-between text-xs text-slate-600 mb-1">
+<span>Cylinder 3 EGT Surge (Exhaust Gas Temp)</span>
+<span class="font-bold text-slate-900">+0.42 SHAP</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full" style="width: 84%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs text-slate-600 mb-1">
+<span>Intercooler Pressure Drop Deviation</span>
+<span class="font-bold text-slate-900">+0.28 SHAP</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full" style="width: 56%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs text-slate-600 mb-1">
+<span>Oil Scavenge Temp Gradient</span>
+<span class="font-bold text-slate-900">+0.15 SHAP</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-500 h-full rounded-full" style="width: 30%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+<span>Inference Engine: PyTorch TensorRT v8.4</span>
+<button class="px-3 py-1.5 bg-slate-900 text-white rounded hover:bg-slate-800 transition-colors font-semibold">Recalculate SHAP</button>
+</div>
+</div>
+</div>
+<!-- Middle Section: Active Faults Table & Expected vs Observed Comparison -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Fault Prediction & Active Faults Table (7 cols) -->
+<div class="lg:col-span-7 bg-white rounded-xl p-5 shadow-sm border border-slate-200/80">
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<div>
+<h2 class="font-headline-lg text-slate-900">Fault Prediction &amp; Active Faults</h2>
+<p class="text-body-sm text-slate-500">Real-time vector classification and confidence matrices</p>
+</div>
+<span class="px-2.5 py-1 text-telemetry-label bg-red-50 text-red-700 border border-red-200 rounded">2 ACTIVE FAULTS</span>
+</div>
+<div class="overflow-x-auto mt-4">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-slate-200 bg-slate-50 text-telemetry-label text-slate-600">
+<th class="p-2.5">Fault Vector</th>
+<th class="p-2.5">Severity</th>
+<th class="p-2.5">Detection Status</th>
+<th class="p-2.5 text-right">Confidence</th>
+<th class="p-2.5 text-right">Detection Time</th>
+</tr>
+</thead>
+<tbody class="text-body-sm divide-y divide-slate-100">
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="p-2.5 font-bold text-slate-900">#VBD-4402 (Exhaust Valve Blowby)</td>
+<td class="p-2.5"><span class="px-2 py-0.5 text-xs bg-red-100 text-red-800 rounded font-semibold">CRITICAL</span></td>
+<td class="p-2.5 text-amber-700 font-semibold">Confirmed</td>
+<td class="p-2.5 text-right font-mono font-bold text-slate-900">96.4%</td>
+<td class="p-2.5 text-right font-mono text-slate-600">14:22:08 UTC</td>
+</tr>
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="p-2.5 font-bold text-slate-900">#TML-1092 (Intercooler Thermal Saturation)</td>
+<td class="p-2.5"><span class="px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded font-semibold">ADVISORY</span></td>
+<td class="p-2.5 text-blue-700 font-semibold">Monitoring</td>
+<td class="p-2.5 text-right font-mono font-bold text-slate-900">84.1%</td>
+<td class="p-2.5 text-right font-mono text-slate-600">14:15:30 UTC</td>
+</tr>
+<tr class="hover:bg-slate-50/80 transition-colors opacity-60">
+<td class="p-2.5 font-bold text-slate-900">#BRG-0883 (Main Journal Bearing Micro-pitting)</td>
+<td class="p-2.5"><span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-700 rounded font-semibold">NOMINAL</span></td>
+<td class="p-2.5 text-emerald-700 font-semibold">Resolved</td>
+<td class="p-2.5 text-right font-mono font-bold text-slate-900">99.2%</td>
+<td class="p-2.5 text-right font-mono text-slate-600">11:04:12 UTC</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+<span>Showing 3 of 14 historical records</span>
+<button class="text-blue-600 font-semibold hover:underline">View Full Fault History Log →</button>
+</div>
+</div>
+<!-- Expected vs Observed Comparison & Residual Analysis (5 cols) -->
+<div class="lg:col-span-5 bg-white rounded-xl p-5 shadow-sm border border-slate-200/80 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<h2 class="font-headline-lg text-slate-900">Expected vs Observed Residuals</h2>
+<span class="text-telemetry-label bg-blue-50 text-blue-700 px-2 py-0.5 rounded">REAL-TIME DELTA</span>
+</div>
+<div class="my-4 space-y-4">
+<!-- Chart Placeholder / SVG Representation -->
+<div class="technical-chart-grid h-40 rounded-lg border border-slate-200 p-3 relative flex items-center justify-center">
+<svg class="w-full h-full text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 400 120">
+<!-- Expected Baseline -->
+<path d="M 0 60 Q 100 55, 200 60 T 400 60" stroke="#94a3b8" stroke-dasharray="4 4" stroke-width="2"></path>
+<!-- Observed Divergence -->
+<path d="M 0 60 Q 80 50, 160 75 T 300 95 T 400 110" stroke="#ef4444" stroke-width="2.5"></path>
+</svg>
+<div class="absolute bottom-2 left-2 flex items-center gap-3 text-[10px] bg-white/90 px-2 py-1 rounded border border-slate-200">
+<span class="flex items-center gap-1"><span class="w-2 h-0.5 bg-slate-400 inline-block"></span> Physics Model</span>
+<span class="flex items-center gap-1"><span class="w-2 h-0.5 bg-red-500 inline-block"></span> Telemetry Stream</span>
+</div>
+</div>
+<!-- Residual Metrics -->
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Mean Residual Error</span>
+<span class="text-headline-sm text-slate-900 font-mono">+14.2 PSI</span>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Max Deviation Rate</span>
+<span class="text-headline-sm text-red-600 font-mono">3.8σ Limit</span>
+</div>
+</div>
+</div>
+</div>
+<div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center">
+<span>Kolmogorov-Smirnov Test: p &lt; 0.001</span>
+<span class="text-red-600 font-bold">Divergence Confirmed</span>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Degradation Tracking, RUL Estimation & Risk Fusion Matrix -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Degradation Tracking & RUL Estimation (7 cols) -->
+<div class="lg:col-span-7 bg-white rounded-xl p-5 shadow-sm border border-slate-200/80">
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<div>
+<h2 class="font-headline-lg text-slate-900">Degradation Tracking &amp; RUL Estimation</h2>
+<p class="text-body-sm text-slate-500">Remaining Useful Life (Weibull Analysis &amp; Monte Carlo)</p>
+</div>
+<span class="px-2.5 py-1 text-telemetry-label bg-red-50 text-red-700 border border-red-200 rounded">HEALTH LIMIT: 50h</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Estimated RUL</span>
+<span class="text-telemetry-metric text-red-600">38.4 Hours</span>
+<span class="text-xs text-slate-400 block mt-0.5">90% Confidence bounds: [31h - 45h]</span>
+</div>
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Weibull Shape (β)</span>
+<span class="text-telemetry-metric text-slate-800">2.45</span>
+<span class="text-xs text-slate-400 block mt-0.5">Wear-out Phase Active</span>
+</div>
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Health Index (HI)</span>
+<span class="text-telemetry-metric text-amber-600">62.8%</span>
+<span class="text-xs text-slate-400 block mt-0.5">Degradation Rate: 0.4%/hr</span>
+</div>
+</div>
+<!-- Health Limit progress bar -->
+<div class="space-y-2 mt-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
+<div class="flex justify-between text-body-sm">
+<span class="font-semibold text-slate-700">Mission Health Limit Threshold (50-Hour Operational Cap)</span>
+<span class="font-mono font-bold text-red-600">76.8% Consumed</span>
+</div>
+<div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden p-0.5">
+<div class="bg-red-600 h-full rounded-full" style="width: 76.8%"></div>
+</div>
+<div class="flex justify-between text-xs text-slate-400">
+<span>0 Hours (Fresh Overhaul)</span>
+<span class="font-bold text-slate-700">Current: 38.4h</span>
+<span>50 Hours (Mandatory Servicing)</span>
+</div>
+</div>
+</div>
+<!-- Risk Fusion Matrix (5 cols) -->
+<div class="lg:col-span-5 bg-white rounded-xl p-5 shadow-sm border border-slate-200/80 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<h2 class="font-headline-lg text-slate-900">Risk Fusion Matrix</h2>
+<span class="text-telemetry-label bg-amber-50 text-amber-700 px-2 py-0.5 rounded">SEVERITY: HIGH</span>
+</div>
+<div class="my-4 grid grid-cols-2 gap-3">
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Mission Impact Risk</span>
+<span class="text-headline-sm text-red-600 font-bold mt-1 block">Level 4 / 5</span>
+<span class="text-xs text-slate-400 mt-1 block">High probability of thermal runaway if operated &gt; 12 hrs</span>
+</div>
+<div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+<span class="text-telemetry-label text-slate-500 block">Structural Integrity</span>
+<span class="text-headline-sm text-amber-600 font-bold mt-1 block">Compromised</span>
+<span class="text-xs text-slate-400 mt-1 block">Exhaust valve seat thermal distortion</span>
+</div>
+</div>
+<div class="bg-red-50 border border-red-200 rounded-lg p-3">
+<div class="flex items-center gap-2 text-red-800 font-bold text-body-sm">
+<span>⚠️ Automated Recommendation</span>
+</div>
+<p class="text-xs text-red-700 mt-1">
+            Initiate controlled power reduction to 65% throttle. Schedule engine inspection within the next 15 flight hours to prevent catastrophic valve failure.
+          </p>
+</div>
+</div>
+<div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+<span class="text-xs text-slate-500">Decision Matrix v4.2</span>
+<button class="px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-xs font-semibold">Override / Execute Protocol</button>
+</div>
+</div>
+</div>
+</div><div class="flex flex-col w-full bg-background text-on-background min-h-screen dashboard-page" id="trends-maintenance">
+<!-- Top Control Bar -->
+<div class="px-8 py-6 flex flex-col md:flex-row justify-between items-start md:items-center bg-surface-container-lowest shadow-sm gap-4">
+<div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-telemetry-label bg-tertiary-container text-on-tertiary-container uppercase tracking-widest font-telemetry-label">Telemetry Analysis</span>
+<span class="text-xs text-outline font-body-sm">ID: ENG-MALE-9021-TR</span>
+</div>
+<h1 class="text-headline-xl font-headline-xl mt-1 text-on-background">Trends &amp; Maintenance Analytics</h1>
+</div>
+<!-- Multi-period Filters -->
+<div class="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded bg-primary text-on-primary transition-all shadow-sm">LIVE</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded text-on-surface-variant hover:bg-surface-variant transition-all">1H</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded text-on-surface-variant hover:bg-surface-variant transition-all">6H</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded text-on-surface-variant hover:bg-surface-variant transition-all">24H</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded text-on-surface-variant hover:bg-surface-variant transition-all">MISSION</button>
+</div>
+</div>
+<!-- Main Content Grid -->
+<div class="p-8 flex flex-col gap-8 max-w-[1600px] w-full mx-auto">
+<!-- Engine Efficiency Trends Panel -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-background">Engine Efficiency &amp; Performance Vector</h2>
+<p class="text-body-md font-body-md text-outline">Real-time multi-parameter telemetry stream and historical trend correlation</p>
+</div>
+<!-- Metrics Tabs -->
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded bg-tertiary-container text-on-tertiary-container transition-all" id="btn-efficiency" onclick="setActiveMetric('efficiency')">Efficiency Index</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-all" id="btn-rpm" onclick="setActiveMetric('rpm')">RPM</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-all" id="btn-fuel" onclick="setActiveMetric('fuel')">Fuel Flow</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-all" id="btn-load" onclick="setActiveMetric('load')">Engine Load</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-all" id="btn-egt" onclick="setActiveMetric('egt')">EGT</button>
+<button class="px-3 py-1.5 text-label-caps font-label-caps rounded bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-all" id="btn-cht" onclick="setActiveMetric('cht')">CHT</button>
+</div>
+</div>
+<!-- Chart Display Area -->
+<div class="technical-chart-grid h-72 w-full rounded-lg relative p-4 flex flex-col justify-between overflow-hidden">
+<div class="flex justify-between items-center z-10">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+<span class="text-telemetry-label font-telemetry-label text-outline">PRIMARY TELEMETRY CHANNEL: <span class="text-on-background" id="current-metric-label">EFFICIENCY INDEX (98.4%)</span></span>
+</div>
+<span class="text-telemetry-label font-telemetry-label text-outline">SAMPLING RATE: 50 Hz</span>
+</div>
+<!-- SVG Trend Line Representation -->
+<div class="absolute inset-0 flex items-end px-4 pb-4 pt-12">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 1000 200">
+<defs>
+<lineargradient id="trendGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#b5d0fd" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#b5d0fd" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<path d="M 0,150 Q 150,120 300,140 T 600,90 T 900,110 L 1000,100 L 1000,200 L 0,200 Z" fill="url(#trendGradient)"></path>
+<path d="M 0,150 Q 150,120 300,140 T 600,90 T 900,110 L 1000,100" fill="none" stroke="#000000" stroke-width="2"></path>
+<!-- Data Points -->
+<circle cx="0" cy="150" fill="#000000" r="3"></circle>
+<circle cx="250" cy="130" fill="#000000" r="3"></circle>
+<circle cx="500" cy="115" fill="#000000" r="3"></circle>
+<circle cx="750" cy="95" fill="#000000" r="3"></circle>
+<circle cx="1000" cy="100" fill="#000000" r="3"></circle>
+</svg>
+</div>
+<div class="flex justify-between items-end z-10 text-outline text-body-sm font-body-sm">
+<span>T-04:00:00</span>
+<span>T-03:00:00</span>
+<span>T-02:00:00</span>
+<span>T-01:00:00</span>
+<span>CURRENT (LIVE)</span>
+</div>
+</div>
+</div>
+<!-- Correlation Charts Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Correlation 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h3 class="text-headline-sm font-headline-sm text-on-background">Efficiency vs. RPM</h3>
+<span class="text-telemetry-label font-telemetry-label text-outline">CORRELATION: 0.94</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Polynomial regression tracking torque delivery against rotational velocity.</p>
+<div class="technical-chart-grid h-40 w-full rounded-lg relative flex items-center justify-center p-2">
+<svg class="w-full h-full" viewbox="0 0 200 100">
+<path d="M 10,90 Q 60,60 100,40 T 190,15" fill="none" stroke="#455f87" stroke-width="2"></path>
+<circle cx="60" cy="62" fill="#ba1a1a" r="3"></circle>
+<circle cx="110" cy="38" fill="#000000" r="3"></circle>
+<circle cx="150" cy="25" fill="#000000" r="3"></circle>
+</svg>
+</div>
+</div>
+<!-- Correlation 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h3 class="text-headline-sm font-headline-sm text-on-background">Efficiency vs. Load</h3>
+<span class="text-telemetry-label font-telemetry-label text-outline">CORRELATION: 0.88</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Thermal dissipation curve under varying aerodynamic drag profiles.</p>
+<div class="technical-chart-grid h-40 w-full rounded-lg relative flex items-center justify-center p-2">
+<svg class="w-full h-full" viewbox="0 0 200 100">
+<path d="M 10,20 Q 80,70 140,80 T 190,85" fill="none" stroke="#455f87" stroke-width="2"></path>
+<circle cx="80" cy="65" fill="#000000" r="3"></circle>
+<circle cx="130" cy="78" fill="#ba1a1a" r="3"></circle>
+</svg>
+</div>
+</div>
+<!-- Correlation 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h3 class="text-headline-sm font-headline-sm text-on-background">Efficiency vs. Mission Phase</h3>
+<span class="text-telemetry-label font-telemetry-label text-outline">CORRELATION: 0.97</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Altitude-adjusted SFC mapping across climb, loiter, and dash.</p>
+<div class="technical-chart-grid h-40 w-full rounded-lg relative flex items-center justify-center p-2">
+<svg class="w-full h-full" viewbox="0 0 200 100">
+<path d="M 10,70 L 50,30 L 100,50 L 150,20 L 190,60" fill="none" stroke="#455f87" stroke-width="2"></path>
+<circle cx="50" cy="30" fill="#000000" r="3"></circle>
+<circle cx="100" cy="50" fill="#000000" r="3"></circle>
+<circle cx="150" cy="20" fill="#000000" r="3"></circle>
+</svg>
+</div>
+</div>
+</div>
+<!-- Degradation & RUL Trend Monitoring -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Degradation Trend Panel -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<div>
+<h3 class="text-headline-lg font-headline-lg text-on-background">Component Degradation Trend</h3>
+<p class="text-body-md font-body-md text-outline">Wear propagation rate per flight hour</p>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container text-on-surface-variant text-telemetry-label font-telemetry-label">RATE: 0.04% / HR</span>
+</div>
+<div class="technical-chart-grid h-48 w-full rounded-lg relative p-4 flex flex-col justify-between">
+<div class="flex justify-between text-telemetry-label font-telemetry-label text-outline">
+<span>MAX THRESHOLD (15.0%)</span>
+<span>CURRENT (4.2%)</span>
+</div>
+<div class="absolute inset-x-4 bottom-10 top-12 flex items-end">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 500 100">
+<path d="M 0,80 Q 150,75 300,50 T 500,20" fill="none" stroke="#ba1a1a" stroke-dasharray="4 4" stroke-width="2"></path>
+<path d="M 0,90 Q 150,88 300,75 T 500,60" fill="none" stroke="#000000" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex justify-between text-outline text-body-sm font-body-sm">
+<span>START OF LIFE</span>
+<span>MID-LIFE</span>
+<span>END OF LIFE</span>
+</div>
+</div>
+</div>
+<!-- RUL Trend Monitoring Panel -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<div>
+<h3 class="text-headline-lg font-headline-lg text-on-background">Remaining Useful Life (RUL)</h3>
+<p class="text-body-md font-body-md text-outline">Prognostic health model convergence</p>
+</div>
+<span class="px-2.5 py-1 rounded bg-tertiary-container text-on-tertiary-container text-telemetry-label font-telemetry-label">CONFIDENCE: 96.2%</span>
+</div>
+<div class="technical-chart-grid h-48 w-full rounded-lg relative p-4 flex flex-col justify-between">
+<div class="flex justify-between text-telemetry-label font-telemetry-label text-outline">
+<span>PROJECTED RUL</span>
+<span class="text-headline-sm font-headline-sm text-on-background">418 FLIGHT HOURS</span>
+</div>
+<div class="absolute inset-x-4 bottom-10 top-12 flex items-end">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 500 100">
+<path d="M 0,20 Q 200,40 350,70 T 500,90" fill="none" stroke="#455f87" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex justify-between text-outline text-body-sm font-body-sm">
+<span>500 HRS</span>
+<span>250 HRS</span>
+<span>0 HRS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Predictive Maintenance & Maintenance Advisory Panel -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-background">Predictive Maintenance &amp; Advisory Log</h2>
+<p class="text-body-md font-body-md text-outline">Automated diagnostics, recommended service queues, and priority intervention schedules</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 rounded bg-error-container text-on-error-container text-label-caps font-label-caps">STATUS: ADVISORY ACTIVE</span>
+<button class="px-4 py-2 rounded bg-primary text-on-primary text-label-caps font-label-caps shadow-sm hover:opacity-90 transition-all">GENERATE WORK ORDER</button>
+</div>
+</div>
+<!-- Advisory Details Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="text-telemetry-label font-telemetry-label text-outline">MAINTENANCE STATUS</span>
+<span class="text-headline-sm font-headline-sm text-on-background">Scheduled Inspection</span>
+<span class="text-body-sm font-body-sm text-outline">No immediate abort triggers</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="text-telemetry-label font-telemetry-label text-outline">DETECTED DEGRADATION</span>
+<span class="text-headline-sm font-headline-sm text-on-background text-error">Injector Flow Variance</span>
+<span class="text-body-sm font-body-sm text-outline">+3.4% above nominal baseline</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="text-telemetry-label font-telemetry-label text-outline">MAINTENANCE PRIORITY</span>
+<span class="text-headline-sm font-headline-sm font-bold text-on-background">MODERATE (LEVEL 2)</span>
+<span class="text-body-sm font-body-sm text-outline">Address within next 50 flight hours</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex flex-col gap-1">
+<span class="text-telemetry-label font-telemetry-label text-outline">MAINTENANCE WINDOW</span>
+<span class="text-headline-sm font-headline-sm text-on-background">Post-Mission Ground</span>
+<span class="text-body-sm font-body-sm text-outline">Estimated downtime: 4.5 hrs</span>
+</div>
+</div>
+<!-- Component Servicing Queue Table -->
+<div class="flex flex-col gap-3">
+<h3 class="text-headline-sm font-headline-sm text-on-background">Component Servicing Queue</h3>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container">
+<th class="p-3 text-telemetry-label font-telemetry-label text-outline">COMPONENT SUBSYSTEM</th>
+<th class="p-3 text-telemetry-label font-telemetry-label text-outline">HEALTH INDEX</th>
+<th class="p-3 text-telemetry-label font-telemetry-label text-outline">ACTION REQUIRED</th>
+<th class="p-3 text-telemetry-label font-telemetry-label text-outline">PRIORITY</th>
+<th class="p-3 text-telemetry-label font-telemetry-label text-outline">EST. TIME</th>
+</tr>
+</thead>
+<tbody class="text-body-md font-body-md">
+<tr class="border-b border-outline-variant hover:bg-surface-container/50 transition-colors">
+<td class="p-3 font-semibold text-on-background">Engine Core (Turbcharger Assembly)</td>
+<td class="p-3 text-outline">94.1%</td>
+<td class="p-3 text-on-surface-variant">Ultrasonic bearing inspection &amp; lubrication</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-telemetry-label font-telemetry-label">LOW</span></td>
+<td class="p-3 text-outline">2.0 hrs</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container/50 transition-colors">
+<td class="p-3 font-semibold text-on-background">Fuel Injector Rail (Bank B)</td>
+<td class="p-3 text-outline">88.5%</td>
+<td class="p-3 text-on-surface-variant">Flow calibration &amp; ultrasonic tip cleaning</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded bg-error-container text-on-error-container text-telemetry-label font-telemetry-label">MODERATE</span></td>
+<td class="p-3 text-outline">1.5 hrs</td>
+</tr>
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="p-3 font-semibold text-on-background">Intercooler &amp; Cooling System</td>
+<td class="p-3 text-outline">91.8%</td>
+<td class="p-3 text-on-surface-variant">Pressure leak test &amp; coolant flush</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-telemetry-label font-telemetry-label">LOW</span></td>
+<td class="p-3 text-outline">1.0 hrs</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div><div class="flex flex-col w-full bg-[#f8fafc] text-slate-900 min-h-screen dashboard-page" id="mission-reports">
+<!-- Top Mission Control Status Bar -->
+<header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-20">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-telemetry-label text-slate-500 uppercase">Mission Console</span>
+</div>
+<h2 class="font-headline-lg text-slate-900 text-lg">Mission &amp; Post-Flight Reports</h2>
+</div>
+<!-- Simulation & Dataset Status Quick Bar -->
+<div class="flex items-center gap-6 text-xs text-slate-600 bg-slate-50 px-4 py-2 rounded border border-slate-200">
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-slate-700">Source:</span>
+<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">SIMULATED</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-slate-700">Model:</span>
+<span class="text-slate-900">DT-AeroPiston-v4.2</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-slate-700">Dataset Status:</span>
+<span class="text-emerald-700 font-semibold">SYNCED</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-slate-700">Last Update:</span>
+<span class="font-mono text-slate-900">T-00:04:12</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
+<!-- Large Digital Twin — Engine State Area -->
+<section class="bg-white rounded border border-slate-200 shadow-sm overflow-hidden">
+<div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm tracking-wide text-slate-800 uppercase">Large Digital Twin — Engine State &amp; Schematic View</span>
+<span class="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-mono">CAD SIM v4.2</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Core Active</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Oil Pressure Flow</span>
+</div>
+</div>
+<div class="relative w-full h-[480px] blueprint-grid flex items-center justify-center p-6 overflow-hidden">
+<!-- SVG Technical Schematic Simulation Overlay -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+<svg class="w-full h-full text-blue-600" fill="none" viewbox="0 0 1000 400">
+<g transform="translate(-150 -75) scale(1.3)">
+<!-- Center Engine Block Wireframe -->
+<rect height="200" rx="10" stroke="currentColor" stroke-dasharray="4 4" stroke-width="2" width="300" x="350" y="150"></rect>
+<!-- Cylinders Left -->
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="250" y="170"></rect>
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="250" y="270"></rect>
+<!-- Cylinders Right -->
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="670" y="170"></rect>
+<rect height="60" rx="4" stroke="currentColor" stroke-width="2" width="80" x="670" y="270"></rect>
+<!-- Crankshaft Centerline -->
+<line stroke="currentColor" stroke-width="3" x1="200" x2="800" y1="250" y2="250"></line>
+<circle cx="500" cy="250" r="40" stroke="currentColor" stroke-width="2"></circle>
+</g>
+</svg>
+</div>
+<!-- Annotation 1: Engine Core -->
+<div class="absolute top-[35%] left-[48%] -translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Engine Core</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Core Temp:</span> <span class="font-mono font-bold text-slate-800">428 °C</span></div>
+<div class="flex justify-between"><span>Vibration:</span> <span class="font-mono font-bold text-slate-800">1.2 mm/s</span></div>
+</div>
+</div>
+<!-- Annotation 2: Cylinder System -->
+<div class="absolute top-[25%] left-[25%] -translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Cylinder System</span>
+<span class="text-emerald-600 font-bold text-[10px]">NOMINAL</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>CHT (Avg):</span> <span class="font-mono font-bold text-slate-800">182 °C</span></div>
+<div class="flex justify-between"><span>Compression:</span> <span class="font-mono font-bold text-slate-800">98%</span></div>
+</div>
+</div>
+<!-- Annotation 3: Lubrication -->
+<div class="absolute bottom-[22%] left-[30%] -translate-x-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Lubrication</span>
+<span class="text-emerald-600 font-bold text-[10px]">STABLE</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Oil Pressure:</span> <span class="font-mono font-bold text-slate-800">4.8 bar</span></div>
+<div class="flex justify-between"><span>Oil Temp:</span> <span class="font-mono font-bold text-slate-800">91 °C</span></div>
+</div>
+</div>
+<!-- Annotation 4: Cooling -->
+<div class="absolute top-[25%] right-[25%] translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Cooling System</span>
+<span class="text-emerald-600 font-bold text-[10px]">OPTIMAL</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Coolant Flow:</span> <span class="font-mono font-bold text-slate-800">12.4 L/m</span></div>
+<div class="flex justify-between"><span>Radiator Eff:</span> <span class="font-mono font-bold text-slate-800">95%</span></div>
+</div>
+</div>
+<!-- Annotation 5: Combustion -->
+<div class="absolute bottom-[50%] right-[18%] bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Combustion</span>
+<span class="text-emerald-600 font-bold text-[10px]">SYNCED</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>EGT:</span> <span class="font-mono font-bold text-slate-800">640 °C</span></div>
+<div class="flex justify-between"><span>Fuel Flow:</span> <span class="font-mono font-bold text-slate-800">18.2 L/h</span></div>
+</div>
+</div>
+<!-- Annotation 6: Rotational System -->
+<div class="absolute bottom-[22%] right-[32%] bg-white/90 backdrop-blur-sm border border-blue-200 p-2.5 rounded shadow-sm text-xs z-10 w-52">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Rotational System</span>
+<span class="text-emerald-600 font-bold text-[10px]">NOMINAL</span>
+</div>
+<div class="space-y-0.5 text-[11px] font-serif text-slate-600">
+<div class="flex justify-between"><span>Speed (RPM):</span> <span class="font-mono font-bold text-slate-800">2,450</span></div>
+<div class="flex justify-between"><span>Torque:</span> <span class="font-mono font-bold text-slate-800">310 Nm</span></div>
+</div>
+</div>
+<!-- CAD Viewport Toolbar overlay -->
+<div class="absolute bottom-4 left-4 bg-white/90 border border-slate-200 p-1.5 rounded flex items-center gap-2 text-xs">
+<button class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded font-bold">ISO VIEW</button>
+<button class="px-2 py-1 hover:bg-slate-100 rounded text-slate-600">SECTION X</button>
+<button class="px-2 py-1 hover:bg-slate-100 rounded text-slate-600">THERMAL MAP</button>
+</div>
+</div>
+</section>
+<!-- Top Row: Mission Reliability Summary & Extreme Parameter Summaries -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Extreme Parameter Summaries (2 cols) -->
+<div class="lg:col-span-2 bg-white rounded border border-slate-200 p-5 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+<h3 class="font-headline-sm text-slate-800">Extreme Parameter Threshold Summaries</h3>
+<span class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200 font-semibold uppercase">Peak Load Envelope</span>
+</div>
+<div class="my-5 flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 min-h-[150px]">
+<span class="text-slate-400 font-bold uppercase tracking-widest text-xs mb-1">Extreme Parameters Placeholder</span>
+<span class="text-slate-400 text-[10px]">Data visualization component coming soon</span>
+</div>
+</div>
+<!-- Mission Reliability Summary Card -->
+<div class="bg-white rounded border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+<h3 class="font-headline-sm text-slate-800">Mission Reliability Summary</h3>
+<span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200 font-semibold uppercase">Aggregate</span>
+</div>
+<div class="my-5 flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 min-h-[150px]">
+<span class="text-slate-400 font-bold uppercase tracking-widest text-xs mb-1">Reliability Placeholder</span>
+<span class="text-slate-400 text-[10px]">Data visualization component coming soon</span>
+</div>
+</div>
+</div>
+<!-- Mission-wise Engine Health & Comparison Table -->
+<div class="bg-white rounded border border-slate-200 overflow-hidden shadow-sm">
+<div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+<div>
+<h3 class="font-headline-sm text-slate-800">Mission-wise Engine Health &amp; Comparison Matrix</h3>
+<p class="text-xs text-slate-500">Comparative operational telemetry across active and archived UAV flight profiles</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded font-semibold">Active Mission: Mission 04</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-telemetry-label uppercase text-[10px]">
+<th class="p-3.5">Mission ID</th>
+<th class="p-3.5">Mission Duration</th>
+<th class="p-3.5">Engine Health</th>
+<th class="p-3.5">Max Load</th>
+<th class="p-3.5">Fault Events</th>
+<th class="p-3.5">Efficiency</th>
+<th class="p-3.5">RUL Change</th>
+<th class="p-3.5">Mission Health</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-xs font-serif">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="p-3.5 font-bold font-mono text-slate-800">MISSION 01</td>
+<td class="p-3.5 font-mono">18h 24m</td>
+<td class="p-3.5"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold">98.2%</span></td>
+<td class="p-3.5 font-mono">22.1 kPa</td>
+<td class="p-3.5 font-mono">00</td>
+<td class="p-3.5 font-mono">34.2%</td>
+<td class="p-3.5 font-mono text-slate-500">-12 hrs</td>
+<td class="p-3.5"><span class="text-emerald-700 font-semibold">Nominal</span></td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="p-3.5 font-bold font-mono text-slate-800">MISSION 02</td>
+<td class="p-3.5 font-mono">24h 10m</td>
+<td class="p-3.5"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold">95.6%</span></td>
+<td class="p-3.5 font-mono">23.8 kPa</td>
+<td class="p-3.5 font-mono">01</td>
+<td class="p-3.5 font-mono">33.8%</td>
+<td class="p-3.5 font-mono text-slate-500">-28 hrs</td>
+<td class="p-3.5"><span class="text-emerald-700 font-semibold">Nominal</span></td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="p-3.5 font-bold font-mono text-slate-800">MISSION 03</td>
+<td class="p-3.5 font-mono">31h 05m</td>
+<td class="p-3.5"><span class="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-semibold">91.4%</span></td>
+<td class="p-3.5 font-mono">24.5 kPa</td>
+<td class="p-3.5 font-mono">02</td>
+<td class="p-3.5 font-mono">32.5%</td>
+<td class="p-3.5 font-mono text-amber-700">-64 hrs</td>
+<td class="p-3.5"><span class="text-amber-700 font-semibold">Advisory</span></td>
+</tr>
+<tr class="bg-blue-50/40 hover:bg-blue-50/70 transition-colors font-semibold">
+<td class="p-3.5 font-bold font-mono text-blue-900 flex items-center gap-2">
+                MISSION 04 
+                <span class="bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-sans uppercase">Active</span>
+</td>
+<td class="p-3.5 font-mono">14h 45m (Live)</td>
+<td class="p-3.5"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold">94.1%</span></td>
+<td class="p-3.5 font-mono">24.2 kPa</td>
+<td class="p-3.5 font-mono text-amber-700">01</td>
+<td class="p-3.5 font-mono">33.1%</td>
+<td class="p-3.5 font-mono text-slate-600">-35 hrs</td>
+<td class="p-3.5"><span class="text-emerald-700 font-semibold">Stable</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Middle Row: Engine State Telemetry Replay & Fault Event Timeline -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Engine State Telemetry Replay Controls (1 col) -->
+<div class="bg-white rounded border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+<h3 class="font-headline-sm text-slate-800">Telemetry State Replay</h3>
+<span class="text-[10px] text-slate-500 uppercase font-bold">Non-Spatial Buffer</span>
+</div>
+<div class="bg-slate-50 p-4 rounded border border-slate-100 mb-4">
+<div class="flex items-center justify-between text-xs text-slate-600 mb-2 font-mono">
+<span>PLAYBACK POSITION</span>
+<span class="font-bold text-slate-900">04:12:35 / 14:45:00</span>
+</div>
+<!-- Progress scrubber -->
+<div class="w-full bg-slate-200 h-2 rounded overflow-hidden relative cursor-pointer">
+<div class="bg-blue-600 h-full w-[35%] relative">
+<span class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-blue-600 rounded-full shadow"></span>
+</div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[10px] text-slate-400">T-Start</span>
+<span class="text-[10px] text-amber-600 font-semibold">Event: CHT Spike</span>
+<span class="text-[10px] text-slate-400">Live</span>
+</div>
+</div>
+<!-- Controls Bar -->
+<div class="grid grid-cols-5 gap-1 mb-4">
+<button class="bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 rounded text-slate-700 flex items-center justify-center transition-colors" title="Step Backward">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+</button>
+<button class="bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 rounded text-slate-700 flex items-center justify-center transition-colors" title="Stop">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24"><rect height="12" width="12" x="6" y="6"></rect></svg>
+</button>
+<button class="bg-slate-900 hover:bg-slate-800 text-white py-2 rounded flex items-center justify-center transition-colors shadow-sm" title="Play/Pause">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"></path></svg>
+</button>
+<button class="bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 rounded text-slate-700 flex items-center justify-center transition-colors" title="Step Forward">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+</button>
+<select class="bg-slate-100 border border-slate-300 text-slate-800 text-xs rounded py-1 px-1 font-mono text-center">
+<option>1x</option>
+<option>2x</option>
+<option>5x</option>
+<option>10x</option>
+</select>
+</div>
+</div>
+<div class="pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between items-center">
+<span>Buffer Health: 100%</span>
+<span class="font-mono text-blue-700">State Vector: OK</span>
+</div>
+</div>
+<!-- Fault Event Timeline Log (2 cols) -->
+<div class="lg:col-span-2 bg-white rounded border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+<h3 class="font-headline-sm text-slate-800">Fault Event Timeline &amp; Telemetry Log</h3>
+<span class="text-[10px] bg-red-50 text-red-700 px-2 py-0.5 rounded border border-red-200 font-semibold uppercase">3 Events Recorded</span>
+</div>
+<div class="space-y-3 font-serif">
+<!-- Event 1 -->
+<div class="flex items-start gap-3 p-2.5 rounded bg-slate-50 border border-slate-100 text-xs">
+<span class="font-mono text-slate-400 pt-0.5">02:14:10</span>
+<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-sans text-[10px] font-semibold h-fit">ADVISORY</span>
+<div class="flex-1">
+<span class="font-bold text-slate-800 block">Cylinder Head Temperature (CHT-03) Excursion</span>
+<span class="text-slate-600 text-[11px]">Local thermal spike reaching 215°C during rapid climb angle adjustment. Self-corrected within 120s.</span>
+</div>
+<button class="text-blue-700 hover:underline font-sans text-[11px]">Jump to Event</button>
+</div>
+<!-- Event 2 -->
+<div class="flex items-start gap-3 p-2.5 rounded bg-slate-50 border border-slate-100 text-xs">
+<span class="font-mono text-slate-400 pt-0.5">07:45.22</span>
+<span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded font-sans text-[10px] font-semibold h-fit">WARNING</span>
+<div class="flex-1">
+<span class="font-bold text-slate-800 block">Oil Pressure Transient Drop</span>
+<span class="text-slate-600 text-[11px]">Pressure dipped to 42 psi following high-load loiter transition. Pump telemetry remained stable.</span>
+</div>
+<button class="text-blue-700 hover:underline font-sans text-[11px]">Jump to Event</button>
+</div>
+<!-- Event 3 -->
+<div class="flex items-start gap-3 p-2.5 rounded bg-slate-50 border border-slate-100 text-xs">
+<span class="font-mono text-slate-400 pt-0.5">11:02:49</span>
+<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-sans text-[10px] font-semibold h-fit">NOTICE</span>
+<div class="flex-1">
+<span class="font-bold text-slate-800 block">Exhaust Gas Temperature (EGT) Variance Normalization</span>
+<span class="text-slate-600 text-[11px]">Inter-cylinder manifold variance settled within 2% margin after automated mixture adjustment.</span>
+</div>
+<button class="text-blue-700 hover:underline font-sans text-[11px]">Jump to Event</button>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+<span>Timeline Resolution: 10ms Frame Interval</span>
+<span class="text-slate-700">Export Timeline CSV Available</span>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Mission Report Generation & Export Action Area -->
+<div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
+<div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-4">
+<div>
+<h3 class="font-headline-lg text-slate-800">Mission Report Generation &amp; Digital Twin Export</h3>
+<p class="text-xs text-slate-500">Compile certified engineering reports and telemetry packages for post-flight analysis</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3.5 py-2 rounded text-xs font-semibold transition-colors flex items-center gap-2">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Export All Packages (.ZIP)
+          </button>
+<button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-semibold transition-colors shadow-sm flex items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Generate Master Dossier
+          </button>
+</div>
+</div>
+<!-- Report Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Report 1: Engine Health Report -->
+<div class="bg-slate-50 p-4 rounded border border-slate-200 flex flex-col justify-between hover:border-slate-300 transition-all">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-slate-400 font-mono">REP-01</span>
+<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-semibold">Ready</span>
+</div>
+<h4 class="font-headline-sm text-slate-800 text-sm mb-1">Engine Health Report</h4>
+<p class="text-xs text-slate-600 font-serif mb-4">Comprehensive breakdown of thermodynamic performance, compression efficiency, and component wear metrics.</p>
+</div>
+<div class="pt-3 border-t border-slate-200/60 flex items-center justify-between">
+<span class="text-[10px] text-slate-500">PDF • 2.4 MB</span>
+<button class="text-xs text-blue-700 font-semibold hover:underline flex items-center gap-1">
+              Download
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+<!-- Report 2: Fault Report -->
+<div class="bg-slate-50 p-4 rounded border border-slate-200 flex flex-col justify-between hover:border-slate-300 transition-all">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-slate-400 font-mono">REP-02</span>
+<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-semibold">Ready</span>
+</div>
+<h4 class="font-headline-sm text-slate-800 text-sm mb-1">Fault Event Report</h4>
+<p class="text-xs text-slate-600 font-serif mb-4">Detailed chronological log of all advisory and warning telemetry triggers with root-cause probabilistic mapping.</p>
+</div>
+<div class="pt-3 border-t border-slate-200/60 flex items-center justify-between">
+<span class="text-[10px] text-slate-500">PDF • 1.1 MB</span>
+<button class="text-xs text-blue-700 font-semibold hover:underline flex items-center gap-1">
+              Download
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+<!-- Report 3: Degradation Report -->
+<div class="bg-slate-50 p-4 rounded border border-slate-200 flex flex-col justify-between hover:border-slate-300 transition-all">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-slate-400 font-mono">REP-03</span>
+<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-semibold">Ready</span>
+</div>
+<h4 class="font-headline-sm text-slate-800 text-sm mb-1">Degradation &amp; RUL Report</h4>
+<p class="text-xs text-slate-600 font-serif mb-4">Remaining Useful Life (RUL) projections, bearing wear progression curves, and predictive failure timelines.</p>
+</div>
+<div class="pt-3 border-t border-slate-200/60 flex items-center justify-between">
+<span class="text-[10px] text-slate-500">PDF • 3.8 MB</span>
+<button class="text-xs text-blue-700 font-semibold hover:underline flex items-center gap-1">
+              Download
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+<!-- Report 4: Maintenance Report -->
+<div class="bg-slate-50 p-4 rounded border border-slate-200 flex flex-col justify-between hover:border-slate-300 transition-all">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-slate-400 font-mono">REP-04</span>
+<span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded font-semibold">Generated</span>
+</div>
+<h4 class="font-headline-sm text-slate-800 text-sm mb-1">Maintenance Action Report</h4>
+<p class="text-xs text-slate-600 font-serif mb-4">Prescriptive maintenance recommendations, parts replacement schedule, and service interval verification.</p>
+</div>
+<div class="pt-3 border-t border-slate-200/60 flex items-center justify-between">
+<span class="text-[10px] text-slate-500">PDF • 1.8 MB</span>
+<button class="text-xs text-blue-700 font-semibold hover:underline flex items-center gap-1">
+              Download
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- EXTRA MANUAL CONTROL CONSOLE -->
+
+</main>
+<!-- END: Main Workstation Body -->
+<script>
+    setInterval(() => {
+      const now = new Date();
+      const utc = now.toISOString().slice(11, 23);
+      const clockEl = document.getElementById('utc-clock');
+      if (clockEl) clockEl.textContent = utc;
+    }, 100);
+  </script>
+<script data-purpose="page-by-page-navigation">
+(function () {
+  const links = Array.from(document.querySelectorAll('.top-nav-link'));
+  const pages = Array.from(document.querySelectorAll('#dashboard-scroll > .dashboard-page'));
+
+  function showPage(id) {
+    pages.forEach(function(page) {
+      page.classList.toggle('active-page', page.id === id);
+    });
+    links.forEach(function(link) {
+      const active = link.dataset.path === id;
+      link.classList.toggle('active', active);
+      link.classList.toggle('bg-blue-50/80', active);
+      link.classList.toggle('text-blue-900', active);
+      link.classList.toggle('border', active);
+      link.classList.toggle('border-blue-200/80', active);
+      link.classList.toggle('font-semibold', active);
+      link.classList.toggle('shadow-sm', active);
+    });
+
+    if (id === 'mission-reports') {
+      const replayBtn = document.getElementById('mode-replay');
+      if (replayBtn) replayBtn.click();
+    } else {
+      const liveBtn = document.getElementById('mode-live');
+      if (liveBtn) liveBtn.click();
+    }
+  }
+
+  links.forEach(function(link) {
+    link.addEventListener('click', function(event) {
+      event.preventDefault();
+      const id = link.dataset.path;
+      showPage(id);
+      try { history.replaceState(null, '', '#' + id); } catch (e) { /* ignore in sandboxed preview */ }
+      window.scrollTo(0, 0);
+    });
+  });
+
+  const initial = location.hash ? location.hash.substring(1) : 'overview-digital-twin';
+  showPage(pages.some(p => p.id === initial) ? initial : 'overview-digital-twin');
+})();
+</script>
+
+<script data-purpose="control-rail-interactions">
+(function () {
+  const consoleEl = document.getElementById('manual-control-console');
+  const extraBtn = document.getElementById('rail-extra-controls');
+  const closeBtn = document.getElementById('close-extra-controls');
+  const throttleRange = document.getElementById('rail-throttle-range');
+  const throttleValue = document.getElementById('rail-throttle-value');
+  const environmentBtn = document.getElementById('rail-environment');
+  const refreshBtn = document.getElementById('rail-refresh');
+
+  function setConsole(open) {
+    if (!consoleEl) return;
+    consoleEl.classList.toggle('hidden', !open);
+    consoleEl.setAttribute('aria-hidden', String(!open));
+    if (extraBtn) {
+      extraBtn.classList.toggle('active', open);
+      extraBtn.setAttribute('aria-expanded', String(open));
+    }
+  }
+
+  extraBtn && extraBtn.addEventListener('click', () => setConsole(consoleEl.classList.contains('hidden')));
+  closeBtn && closeBtn.addEventListener('click', () => setConsole(false));
+  // Environment opens as a compact preset selector in the left Control Rail.
+  environmentBtn && environmentBtn.addEventListener('click', () => {
+    const envPanel = document.getElementById('environment-panel');
+    if (!envPanel) return;
+    const isOpen = envPanel.classList.toggle('hidden') === false;
+    environmentBtn.classList.toggle('active', isOpen);
+    environmentBtn.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  const environmentCondition = document.getElementById('environment-condition');
+  if (environmentCondition) {
+    const environmentPresets = {
+      STANDARD: { altitude: 2000, ambient: 25, pressure: 101.3, iat: 30, humidity: 60 },
+      HIGH_ALTITUDE: { altitude: 8000, ambient: 5, pressure: 35.5, iat: 8, humidity: 30 },
+      HOT_WEATHER: { altitude: 1000, ambient: 45, pressure: 100.0, iat: 52, humidity: 70 },
+      ENDURANCE: { altitude: 5000, ambient: 15, pressure: 54.0, iat: 18, humidity: 45 },
+      RAPID_TRANSITION: { altitude: 3500, ambient: 30, pressure: 65.0, iat: 36, humidity: 55 }
+    };
+
+    environmentCondition.addEventListener('change', () => {
+      const preset = environmentPresets[environmentCondition.value];
+      if (!preset) return;
+      // Keep the selected condition available to the rest of the UI/backend integration.
+      window.currentEnvironmentCondition = environmentCondition.value;
+      window.currentEnvironment = preset;
+    });
+  }
+
+  refreshBtn && refreshBtn.addEventListener('click', () => window.location.reload());
+
+  throttleRange && throttleRange.addEventListener('input', () => {
+    if (throttleValue) throttleValue.textContent = throttleRange.value + '%';
+  });
+
+  // Parameter console: category tabs scroll/highlight their section
+  const paramTabs = document.querySelectorAll('.param-tab');
+  const paramGroups = document.querySelectorAll('.param-group');
+  paramTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      paramTabs.forEach(t => t.classList.toggle('active', t === tab));
+      const target = document.querySelector('.param-group[data-group="' + tab.dataset.tab + '"]');
+      paramGroups.forEach(g => g.classList.toggle('collapsed', g !== target));
+      if (target) target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  });
+
+  // Accordion expand/collapse per group
+  document.querySelectorAll('.param-group-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const group = header.closest('.param-group');
+      const collapsed = group.classList.toggle('collapsed');
+      header.setAttribute('aria-expanded', String(!collapsed));
+    });
+  });
+
+  // Slider <-> value box sync for the parameter console
+  document.querySelectorAll('.param-slider').forEach(slider => {
+    const valueBox = document.getElementById(slider.dataset.valueTarget);
+    slider.addEventListener('input', () => {
+      if (valueBox) valueBox.value = slider.value;
+    });
+    if (valueBox) {
+      valueBox.addEventListener('change', () => {
+        const num = parseFloat(valueBox.value);
+        if (!isNaN(num)) slider.value = num;
+      });
+    }
+  });
+
+  document.querySelectorAll('.console-control input[data-value-target]').forEach(input => {
+    input.addEventListener('input', () => {
+      const target = document.getElementById(input.dataset.valueTarget);
+      if (!target) return;
+      if (input.dataset.valueTarget.includes('rpm')) target.textContent = input.value + ' RPM';
+      else target.textContent = input.value + ' %';
+    });
+  });
+
+  document.querySelector('.console-reset')?.addEventListener('click', () => {
+    const values = {
+      'console-throttle-value': '65 %',
+      'console-load-value': '68 %',
+      'console-rpm-value': '4200 RPM'
+    };
+    document.querySelectorAll('.console-control input[type="range"]').forEach(input => {
+      if (input.dataset.valueTarget === 'console-throttle-value') input.value = 65;
+      if (input.dataset.valueTarget === 'console-load-value') input.value = 68;
+      if (input.dataset.valueTarget === 'console-rpm-value') input.value = 4200;
+    });
+    Object.entries(values).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    });
+  });
+
+  const modeLive = document.getElementById('mode-live');
+  const modeReplay = document.getElementById('mode-replay');
+  if (modeLive && modeReplay) {
+    const setMode = (isLive) => {
+      if (isLive) {
+        modeLive.className = "px-3 py-1 text-xs font-bold rounded bg-white text-slate-800 shadow-sm transition-colors";
+        modeReplay.className = "px-3 py-1 text-xs font-bold rounded text-slate-500 hover:text-slate-700 transition-colors";
+      } else {
+        modeReplay.className = "px-3 py-1 text-xs font-bold rounded bg-white text-slate-800 shadow-sm transition-colors";
+        modeLive.className = "px-3 py-1 text-xs font-bold rounded text-slate-500 hover:text-slate-700 transition-colors";
+      }
+    };
+    modeLive.addEventListener('click', () => setMode(true));
+    modeReplay.addEventListener('click', () => setMode(false));
+  }
+})();
+</script>
+</body></html>
