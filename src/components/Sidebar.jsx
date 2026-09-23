@@ -1,0 +1,4 @@
+import React from 'react';
+import Brand from './Brand.jsx';
+import ControlRail from './ControlRail.jsx';
+export default function Sidebar() { return <aside className="w-72 min-w-[288px] max-w-[288px] bg-white border-r-2 border-slate-300 shadow-md flex flex-col justify-between h-screen sticky top-0 select-none z-30 overflow-y-auto"><div className="flex flex-col"><Brand /><div className="px-3 py-3 border-b border-slate-100"><div className="px-1 text-[9px] uppercase tracking-[0.16em] font-bold text-slate-400">Dashboard Navigation</div><div className="text-[10px] text-slate-400 mt-1">Use the top navigation bar</div></div><ControlRail /></div><div className="p-4 border-t border-slate-100 text-center"><p className="text-[10px] tracking-widest text-slate-500 uppercase font-semibold">PRECISION • RELIABILITY • MISSION SUCCESS</p></div></aside>; }

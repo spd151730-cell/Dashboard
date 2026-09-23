@@ -1,0 +1,265 @@
+* {
+      font-family: 'Times New Roman', Times, Georgia, serif !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+/* Subtle blueprint grid pattern for the CAD Digital Twin viewport */
+    .blueprint-grid {
+      background-color: #f0f7ff;
+      background-image: 
+        linear-gradient(to right, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .technical-chart-grid {
+      background-color: #ffffff;
+      background-image: 
+        linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+.bg-background{background-color:#f8fafc}.text-on-background{color:#0f172a}
+  .bg-surface-container-lowest{background-color:#fff}.bg-surface-container{background-color:#f1f5f9}
+  .bg-surface-variant{background-color:#e2e8f0}.text-on-surface-variant{color:#475569}
+  .bg-tertiary-container{background-color:#e0f2fe}.text-on-tertiary-container{color:#075985}
+  .bg-primary{background-color:#0f172a}.text-on-primary{color:#fff}
+  .text-outline{color:#64748b}.text-headline-xl{font-size:1.5rem;line-height:2rem}
+  .text-headline-lg{font-size:1.125rem;line-height:1.75rem}
+  .text-body-md{font-size:.875rem;line-height:1.5rem}
+  .text-label-caps{font-size:.65rem;line-height:1rem;text-transform:uppercase;letter-spacing:.08em}
+  .text-telemetry-label{font-size:.65rem;line-height:1rem;text-transform:uppercase;letter-spacing:.06em}
+  .font-headline-xl,.font-headline-lg,.font-body-md,.font-label-caps,.font-telemetry-label{font-family:'Times New Roman',Times,Georgia,serif}
+
+html{scroll-behavior:auto; overflow:hidden}
+  #overview-digital-twin section.bg-white.rounded.border.shadow-sm.overflow-hidden .blueprint-grid{
+    width:100%;
+    min-height:480px;
+  }
+  @media (min-width: 1536px){
+    #overview-digital-twin > div{
+      max-width:100%;
+    }
+  }
+
+  html { scroll-behavior: smooth; }
+  body { overflow: hidden; }
+
+  #workstation-main { min-width: 0; }
+  #dashboard-scroll { min-width: 0; overflow: hidden !important; }
+
+  .rail-control {
+    min-height: 34px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .rail-control:hover { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+  .rail-control.active { background: #eaf2ff; border-color: #93c5fd; color: #1e40af; }
+
+  .top-nav-link {
+    display:flex;
+    align-items:center;
+    white-space:nowrap;
+    padding:7px 12px;
+    border-radius:5px;
+    font-size:15px;
+    color:#1e3a8a;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    font-weight:600;
+    transition:background-color .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .top-nav-link:hover { background:#dbeafe; color:#1e3a8a; border-color:#93c5fd; }
+  .top-nav-link.active { background:#1e40af; color:#ffffff; border:1px solid #1e40af; }
+  .top-nav-link:active { background:#1e3a8a; color:#ffffff; border:1px solid #1e3a8a; }
+
+  /* Page-by-page dashboard navigation: only one workspace is visible at a time. */
+  #dashboard-scroll {
+    position: relative;
+    overflow: hidden !important;
+    height: calc(100vh - 108px);
+     overflow: hidden !important;
+    min-height: 0;
+  }
+  #dashboard-scroll > .dashboard-page {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 0;
+    display: block;
+    box-sizing: border-box;
+  }
+  #dashboard-scroll > .dashboard-page.active-page {
+    display: block;
+  }
+  .page-fit {
+    height: 100%;
+    overflow: hidden;
+  }
+  .environment-page {
+    padding: 24px;
+    background: #f8fafc;
+  }
+  .environment-grid {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:14px;
+  }
+  .environment-item {
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:5px;
+    padding:16px;
+  }
+  @media (max-width: 1100px) {
+    .environment-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
+
+  /* Manual control console: opens directly under the Extra Controls button in the sidebar */
+  .manual-console-panel { max-height: 70vh; overflow-y: auto; }
+  .manual-console-inner { min-height: 0; width: auto; }
+
+  .param-console { display: flex; flex-direction: column; gap: 10px; }
+  .param-tabs { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px; }
+  .param-tab {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #dbeafe;
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 13px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .param-tab.active { border-color: #2563eb; box-shadow: 0 0 0 1px #2563eb inset; color: #1d4ed8; background: #fff; }
+  .param-tab:hover { border-color: #93c5fd; }
+
+  .param-group { border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; overflow: hidden; }
+  .param-group-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #475569;
+    background: #fff;
+  }
+  .param-chevron { display:inline-block; transition: transform .18s ease; color:#94a3b8; }
+  .param-group.collapsed .param-chevron { transform: rotate(-90deg); }
+  .param-group-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 16px 16px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .param-group.collapsed .param-group-body { display: none; }
+  .param-row { display: flex; flex-direction: column; gap: 8px; }
+  .param-row-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .param-label { font-size: 12px; font-weight: 700; color: #1e293b; display:flex; flex-direction:column; gap:2px; }
+  .param-label span { font-size: 10px; font-weight: 600; color: #94a3b8; text-transform: none; letter-spacing: 0; }
+  .param-slider {
+    width: 100%;
+    height: 22px;
+    accent-color: #2563eb;
+    cursor: pointer;
+  }
+  .param-value {
+    border: 1.5px solid #2563eb;
+    border-radius: 6px;
+    padding: 5px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    width: 72px;
+    text-align: right;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .console-control {
+    min-width: 0;
+    border-left: 2px solid #e2e8f0;
+    padding: 0 10px 0 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5px;
+  }
+  .console-control label {
+    font-size: 9px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: 800;
+    color: #475569;
+  }
+  .console-control output {
+    font-size: 10px;
+    color: #64748b;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+  }
+  .console-control input[type="range"] {
+    width: 100%;
+    accent-color: #2563eb;
+    cursor: pointer;
+  }
+  .console-control select {
+    width: 100%;
+    min-height: 30px;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    background: #fff;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 6px;
+  }
+  .console-reset {
+    align-self: flex-start;
+    margin-top: 1px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .console-reset:hover { background: #f1f5f9; }
+
+  @media (max-width: 1100px) {
+    .manual-console.open { max-height: 42vh; height: 42vh; }
+  }
+  @media (max-width: 700px) {
+    body { overflow: auto; }
+    #workstation-main { height: auto; min-height: 100vh; }
+    #dashboard-scroll { overflow: hidden !important; }
+    .manual-console.open { max-height: none; height: auto; }
+  }
+
+/* React shell additions */
+#root { min-height: 100vh; width: 100%; }
+.react-page-mount { flex: 1; min-width: 0; min-height: 0; overflow: hidden; }
+.react-page-mount > .dashboard-page { height: 100%; overflow-x: hidden; overflow-y: auto; }
+.react-control-button { cursor: pointer; }
